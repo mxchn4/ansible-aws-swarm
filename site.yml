@@ -1,0 +1,36 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    instance_group: dkmanager
+    count: 1
+    
+  roles:
+    - { role: ec2, when: "groups['{{ instance_group }}'] is not defined" }
+
+- hosts: dkmanager
+  gather_facts: false
+  become: true
+
+  roles:
+    - docker
+    - swarmmanager
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    instance_group: dkworker
+    count: 2
+
+  roles:
+    - { role: ec2, when: "groups['{{ instance_group }}'] is not defined" }
+
+- hosts: dkworker
+  gather_facts: false
+  become: true
+
+  roles:
+    - docker
+    - swarmworker

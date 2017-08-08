@@ -1,0 +1,22 @@
+- name: swarm init
+  shell: docker swarm init
+
+- name: get token
+  shell: docker swarm join-token worker -q
+  register: token
+
+- name: get private ip
+  shell: hostname --ip-address
+  register: managerprivateip
+
+- name: copy to local
+  become: False
+  local_action: lineinfile path=roles/swarmworker/files/add.sh create=yes state=present line="docker swarm join --token {{ token.stdout }} {{ managerprivateip.stdout }}:2377"
+
+- name: copy viz.yml
+  copy:
+    src: viz.yml
+    dest: .
+
+- name: create viz
+  shell: docker stack deploy -c viz.yml viz

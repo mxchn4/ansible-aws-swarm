@@ -1,0 +1,13 @@
+# - name: add worker to swarm
+#   debug:
+#     msg: "{{ token }}"
+  
+- name: copy add worker sh
+  copy:
+    src: add.sh
+    dest: .
+    mode: "u=rw,g=r,o=rwx"
+
+- name: add worker to swarm
+  shell: ./add.sh
+
